@@ -1,12 +1,9 @@
 package com.victor;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -16,10 +13,12 @@ import java.util.prefs.Preferences;
  */
 public class mySQL {
 
-    Preferences preferences = Preferences.userNodeForPackage(mySQL.class);
-    String connectionString = "";
+    private static mySQL instance = new mySQL();
+    private String connectionstring;
 
-    public mySQL() {
+    private mySQL() {
+
+        Preferences preferences = Preferences.userNodeForPackage(mySQL.class);
 
         //Load connection data
         if (preferences.get("servidor", null) == null) {
@@ -29,11 +28,11 @@ public class mySQL {
             preferences.put("contraseña", JOptionPane.showInputDialog(null, "Contraseña", "Configuración", JOptionPane.QUESTION_MESSAGE));
         }
 
-        connectionString = new java.util.Formatter().format("jdbc:mysql://%1$s:%2$s/adsl?user=%3$s&password=%4$s",
-                preferences.get("servidor","localhost"),
-                preferences.get("puerto","3306"),
-                preferences.get("usuario",null),
-                preferences.get("contraseña",null)).toString();
+        connectionstring = new java.util.Formatter().format("jdbc:mysql://%1$s:%2$s/adsl?user=%3$s&password=%4$s",
+                preferences.get("servidor", "localhost"),
+                preferences.get("puerto", "3306"),
+                preferences.get("usuario", null),
+                preferences.get("contraseña", null)).toString();
 
         try {
             Class.forName("com.mysql.jdbc.Driver");
@@ -43,9 +42,13 @@ public class mySQL {
 
     }
 
-    public Connection getConnection() throws  SQLException {
+    public static mySQL get() {
+        return instance;
+    }
 
-        return DriverManager.getConnection(connectionString);
+    public Connection getConnection() throws SQLException {
+
+        return DriverManager.getConnection(connectionstring);
 
     }
 

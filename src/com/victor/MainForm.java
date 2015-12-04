@@ -1,16 +1,17 @@
 package com.victor;
 
 import javax.swing.*;
-import javax.swing.event.ListDataListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.Vector;
 
 /**
  * Created by victormanuel on 03/12/2015.
@@ -19,14 +20,30 @@ public class MainForm {
     private JPanel rootPane;
     private JTable uxgrd;
     private JComboBox uxcmbADSL;
-    private mySQL mysql;
 
     public MainForm() {
 
-        mysql = new mySQL();
+        String ip = "127.0.0.1";
+
+        //buscamos la Ip_Class externa del equipo
+        try {
+            URL whatismyip = new URL("http://checkip.amazonaws.com");
+            BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
+            ip = in.readLine(); //you get the IP as a String
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         uxcmbADSL.setModel(new cmbModel());
-
+        uxcmbADSL.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                cargaDatos(((Ip_Class) uxcmbADSL.getSelectedItem()).getid());
+            }
+        });
+        if (uxcmbADSL.getItemCount() > 0) {
+            uxcmbADSL.setSelectedIndex(((cmbModel) uxcmbADSL.getModel()).getIndexOf(ip));
+        }
 
     }
 
@@ -39,69 +56,107 @@ public class MainForm {
         frame.setVisible(true);
     }
 
-    private class cmbModel implements ComboBoxModel {
+    public void cargaDatos(int ip_id) {
 
-        public cmbModel() {
+        DefaultTableModel model = new DefaultTableModel(0, 5);
+        Vector datos;
 
-            //buscamos la ip externa del equipo
-            String ip = "localhost";
-            try {
-                URL whatismyip = new URL("http://checkip.amazonaws.com");
-                BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
-                ip = in.readLine(); //you get the IP as a String
-            } catch (IOException e) {
-                e.printStackTrace();
+        try (PreparedStatement stmt = mySQL.get().getConnection().prepareStatement("SELECT time,download,upload,attdownrate,attuprate FROM datos WHERE ip_id=? ORDER BY time DESC")) {
+            stmt.setInt(1, ip_id);
+            ResultSet res = stmt.executeQuery();
+            while (res.next()) {
+                datos = new Vector();
+                datos.add(res.getTimestamp("time"));
+                datos.add(res.getInt("download"));
+                datos.add(res.getInt("upload"));
+                datos.add(res.getInt("attdownrate"));
+                datos.add(res.getInt("attuprate"));
+                model.addRow(datos);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-            DefaultComboBoxModel combo = new DefaultComboBoxModel();
+        uxgrd.setModel(model);
 
-            try (ResultSet res = mysql.getConnection().createStatement().executeQuery("SELECT id,ip_id FROM ip")) {
-                while (res.next()) {
-                    combo.addElement(res.getString("name"));
-                }
-            } catch (Exception e) {}
+    }
 
+    private class tblModel extends AbstractTableModel {
+
+        public tblModel() {
         }
 
         @Override
-        public void setSelectedItem(Object o) {
-
-        }
-
-        @Override
-        public Object getSelectedItem() {
-            return null;
-        }
-
-        @Override
-        public int getSize() {
+        public int getRowCount() {
             return 0;
         }
 
         @Override
-        public Object getElementAt(int i) {
+        public int getColumnCount() {
+            return 0;
+        }
+
+        @Override
+        public Object getValueAt(int i, int i1) {
             return null;
-        }
-
-        @Override
-        public void addListDataListener(ListDataListener listDataListener) {
-
-        }
-
-        @Override
-        public void removeListDataListener(ListDataListener listDataListener) {
-
         }
     }
 
-    public DefaultTableModel cargaDatos(int ip_id) {
+    private class cmbModel extends DefaultComboBoxModel {
 
-        try (PreparedStatement stmt = mysql.getConnection().prepareStatement("SELECT ip_id,download,upload,attdownrate,attuprate,downpower,uppower FROM datos WHERE ip_id=?")) {
-            stmt.setInt(1, ip_id);
-            stmt.executeQuery();
-        } catch (Exception e) {}
+        private Vector<Ip_Class> datos = new Vector<>();
 
-        return null;
+        public cmbModel() {
+
+            try (ResultSet res = mySQL.get().getConnection().createStatement().executeQuery("SELECT * FROM ip")) {
+                while (res.next()) {
+                    datos.addElement(new Ip_Class(res.getInt("id"), res.getString("ip"), res.getString("name")));
+                }
+            } catch (Exception e) {
+            }
+
+        }
+
+        @Override
+        public int getSize() {
+            return datos.size();
+        }
+
+        @Override
+        public Object getElementAt(int i) {
+            return datos.get(i);
+        }
+
+        public int getIndexOf(String ip) {
+            int index = 0;
+            for (Ip_Class e : datos) {
+                if (e.ip == ip) index = datos.indexOf(e);
+            }
+            return index;
+        }
+
+    }
+
+    private class Ip_Class {
+        private int id;
+        private String ip;
+        private String name;
+
+        public Ip_Class(int id, String ip, String name) {
+            this.id = id;
+            this.ip = ip;
+            this.name = name;
+        }
+
+        public int getid() {
+            return id;
+        }
+
+        @Override
+        public String toString() {
+            return name + " - " + ip;
+        }
+
     }
 
 }
