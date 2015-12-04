@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Formatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -28,7 +29,7 @@ public class mySQL {
             preferences.put("contraseña", JOptionPane.showInputDialog(null, "Contraseña", "Configuración", JOptionPane.QUESTION_MESSAGE));
         }
 
-        connectionstring = new java.util.Formatter().format("jdbc:mysql://%1$s:%2$s/adsl?user=%3$s&password=%4$s",
+        connectionstring = new Formatter().format("jdbc:mysql://%1$s:%2$s/adsl?user=%3$s&password=%4$s",
                 preferences.get("servidor", "localhost"),
                 preferences.get("puerto", "3306"),
                 preferences.get("usuario", null),
@@ -51,6 +52,5 @@ public class mySQL {
         return DriverManager.getConnection(connectionstring);
 
     }
-
 
 }

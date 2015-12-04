@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="ADSLParamsView:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/ADSLParamsView_jar</output-path>
+    <root id="archive" name="ADSLParamsView.jar">
+      <element id="module-output" name="ADSLParamsView" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../Libs/mysql-connector-java-5.0.8/mysql-connector-java-5.0.8-bin.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
