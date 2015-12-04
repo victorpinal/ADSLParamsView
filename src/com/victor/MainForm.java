@@ -48,6 +48,20 @@ public class MainForm {
     }
 
     public static void main(String[] args) {
+
+        try {
+            UIManager.setLookAndFeel(
+                    UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+
         JFrame frame = new JFrame("MainForm");
         frame.setContentPane(new MainForm().rootPane);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -130,7 +144,7 @@ public class MainForm {
         public int getIndexOf(String ip) {
             int index = 0;
             for (Ip_Class e : datos) {
-                if (e.ip == ip) index = datos.indexOf(e);
+                if (e.ip.equals(ip)) index = datos.indexOf(e);
             }
             return index;
         }
