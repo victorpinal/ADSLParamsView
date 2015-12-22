@@ -65,8 +65,6 @@ public class MainForm {
                 Component c = super.getTableCellRendererComponent(jTable, value, isSelected, hasFocus, row, column);
                 if (column == 1 && row >= 0) {
                     //c.setBackground(new Color(0,255,0,(int)value));
-                } else {
-                    c.setBackground(Color.white);
                 }
                 return c;
             }
