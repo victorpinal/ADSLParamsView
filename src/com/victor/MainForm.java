@@ -26,7 +26,7 @@ import java.util.Vector;
 public class MainForm {
     private JPanel rootPane;
     private JTable uxgrd;
-    private JComboBox uxcmb;
+    private JComboBox<Ip_Class> uxcmb;
     private JTextArea txtResumen;
 
     public MainForm() {
@@ -59,7 +59,8 @@ public class MainForm {
 
         //Pintar las lineas del grid
         uxgrd.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
-            @Override
+			private static final long serialVersionUID = 1L;
+			@Override
             public Component getTableCellRendererComponent(JTable jTable, Object value, boolean isSelected, boolean hasFocus,
                                                            int row, int column) {
                 Component c = super.getTableCellRendererComponent(jTable, value, isSelected, hasFocus, row, column);
@@ -93,7 +94,7 @@ public class MainForm {
 
         String cols[] = {"Hora","Down","Up","Att.Down","Att.Up"};
         DefaultTableModel model = new DefaultTableModel(null,cols);
-        Vector datos;
+        Vector<Object> datos;
 
         try (PreparedStatement stmt = mySQL.get().getConnection().prepareStatement("SELECT time,download,upload,attdownrate,attuprate FROM datos WHERE ip_id=? ORDER BY time DESC")) {
 
@@ -101,7 +102,7 @@ public class MainForm {
             ResultSet res = stmt.executeQuery();
 
             while (res.next()) {
-                datos = new Vector();
+                datos = new Vector<Object>();
                 datos.add(new SimpleDateFormat("dd/MM/yy HH:mm").format(res.getTimestamp("time")));
                 datos.add(res.getInt("download"));
                 datos.add(res.getInt("upload"));
@@ -184,6 +185,7 @@ public class MainForm {
                         res.getInt("Min_DOWN_Power"),
                         res.getInt("Min_UP_Power"));
             }
+            formatter.close();
 
             txtResumen.setText(sb.toString());
 

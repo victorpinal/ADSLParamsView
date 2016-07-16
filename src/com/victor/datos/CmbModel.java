@@ -9,9 +9,13 @@ import java.util.Vector;
 /**
  * Created by victo on 04/12/2015.
  */
-public class CmbModel extends DefaultComboBoxModel {
+public class CmbModel extends DefaultComboBoxModel<Ip_Class> {
 
-    private Vector<Ip_Class> datos = new Vector<>();
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Vector<Ip_Class> datos = new Vector<>();
 
     public CmbModel() {
 
@@ -30,14 +34,15 @@ public class CmbModel extends DefaultComboBoxModel {
     }
 
     @Override
-    public Object getElementAt(int i) {
+    public Ip_Class getElementAt(int i) {
         return datos.get(i);
     }
 
     public int getIndexOf(String ip) {
         int index = 0;
         for (Ip_Class e : datos) {
-            if (e.equals(new Ip_Class(0,ip,""))) index = datos.indexOf(e);
+            if (e.equals(new Ip_Class(0,ip,""))) 
+            	index = datos.indexOf(e);
         }
         return index;
     }

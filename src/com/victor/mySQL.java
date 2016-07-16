@@ -1,44 +1,44 @@
 package com.victor;
 
-import javax.swing.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Formatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
+
+import javax.swing.JOptionPane;
 
 /**
  * Created by victormanuel on 03/12/2015.
  */
 public class mySQL {
 
-    private static mySQL instance = new mySQL();
-    private String connectionstring;
+    private static final mySQL instance = new mySQL();
+    private static final Logger _log = Logger.getLogger(mySQL.class.getName());
+	private final String connectionString;
 
     private mySQL() {
 
-        Preferences preferences = Preferences.userNodeForPackage(mySQL.class);
-
-        //Load connection data
-        if (preferences.get("servidor", null) == null) {
-            preferences.put("servidor", JOptionPane.showInputDialog(null, "Servidor MySQL", "Configuraci贸n", JOptionPane.QUESTION_MESSAGE));
-            preferences.put("puerto", JOptionPane.showInputDialog(null, "Puerto", "Configuraci贸n", JOptionPane.QUESTION_MESSAGE));
-            preferences.put("usuario", JOptionPane.showInputDialog(null, "Usuario", "Configuraci贸n", JOptionPane.QUESTION_MESSAGE));
-            preferences.put("contrase帽a", JOptionPane.showInputDialog(null, "Contrase帽a", "Configuraci贸n", JOptionPane.QUESTION_MESSAGE));
+    	// Read connection data from preferences
+		Preferences preferences = Preferences.userNodeForPackage(mySQL.class);
+        if (preferences.get("servidor", null) == null || preferences.get("contrase馻", null) == null) {
+            preferences.put("servidor", JOptionPane.showInputDialog(null, "Servidor MySQL", "Configuraci髇", JOptionPane.QUESTION_MESSAGE));
+            preferences.put("puerto", JOptionPane.showInputDialog(null, "Puerto", "Configuraci髇", JOptionPane.QUESTION_MESSAGE));
+            preferences.put("usuario", JOptionPane.showInputDialog(null, "Usuario", "Configuraci髇", JOptionPane.QUESTION_MESSAGE));
+            preferences.put("contrase馻", JOptionPane.showInputDialog(null, "Contrase馻", "Configuraci髇", JOptionPane.QUESTION_MESSAGE));
         }
 
-        connectionstring = new Formatter().format("jdbc:mysql://%1$s:%2$s/adsl?user=%3$s&password=%4$s",
+        connectionString = String.format("jdbc:mysql://%1$s:%2$s/adsl?user=%3$s&password=%4$s",
                 preferences.get("servidor", "localhost"),
                 preferences.get("puerto", "3306"),
                 preferences.get("usuario", null),
-                preferences.get("contrase帽a", null)).toString();
+                preferences.get("contrase馻", null)).toString();
 
         try {
             Class.forName("com.mysql.jdbc.Driver");
         } catch (ClassNotFoundException e) {
-            Logger.getLogger(mySQL.class.getName()).log(Level.SEVERE, null, e);
+            _log.log(Level.SEVERE, "Driver no encontrado", e);
         }
 
     }
@@ -49,7 +49,7 @@ public class mySQL {
 
     public Connection getConnection() throws SQLException {
 
-        return DriverManager.getConnection(connectionstring);
+        return DriverManager.getConnection(connectionString);
 
     }
 
