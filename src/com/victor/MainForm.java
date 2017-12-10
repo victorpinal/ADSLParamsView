@@ -1,12 +1,7 @@
 package com.victor;
 
-import com.victor.datos.CmbModel;
-import com.victor.datos.Ip_Class;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -20,16 +15,53 @@ import java.util.Formatter;
 import java.util.Locale;
 import java.util.Vector;
 
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+
+import com.victor.datos.CmbModel;
+import com.victor.datos.Ip_Class;
+
 /**
  * Created by victormanuel on 03/12/2015.
  */
-public class MainForm {
-    private JPanel rootPane;
+public class MainForm extends JFrame {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
     private JTable uxgrd;
-    private JComboBox<Ip_Class> uxcmb;
-    private JTextArea txtResumen;
+	private JTextArea txtResumen;
 
     public MainForm() {
+    	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    	
+    	JSplitPane splitPane = new JSplitPane();
+    	getContentPane().add(splitPane);
+    	
+    	JScrollPane scrollPane = new JScrollPane();
+    	splitPane.setRightComponent(scrollPane);
+    	
+    	uxgrd = new JTable();
+    	scrollPane.setViewportView(uxgrd);
+    	
+    	JPanel panel = new JPanel();
+    	splitPane.setLeftComponent(panel);
+    	panel.setLayout(new BorderLayout(0, 0));
+    	
+    	JComboBox<Ip_Class> uxcmb = new JComboBox<Ip_Class>();
+    	panel.add(uxcmb, BorderLayout.NORTH);
+    	
+    	txtResumen = new JTextArea();
+    	panel.add(txtResumen);
 
         String ip = "127.0.0.1";
 
@@ -82,9 +114,7 @@ public class MainForm {
             e.printStackTrace();
         }
 
-        JFrame frame = new JFrame("MainForm");
-        frame.setContentPane(new MainForm().rootPane);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JFrame frame = new MainForm();
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
@@ -132,7 +162,7 @@ public class MainForm {
             while (res.next()) {
 
                 formatter.format("%6s registros %n", res.getInt("NumRecords"));
-                formatter.format("%6s días desde %s %n", res.getInt("NumDays"),
+                formatter.format("%6s dias desde %s %n", res.getInt("NumDays"),
                         new SimpleDateFormat("dd/MM/yy HH:mm").format(res.getTimestamp("Min_Date")));
                 formatter.format("%nUltimo %s %n",
                         new SimpleDateFormat("dd/MM/yy HH:mm").format(res.getTimestamp("Max_Date")));
@@ -140,19 +170,19 @@ public class MainForm {
                 formatter.format("%nSNR   DOWNLOAD          UPLOAD %n");
                 formatter.format(" MAX  %8s(%3s) %10s(%3s) %n",
                         res.getInt("Max_DOWN_SNR"),
-                        res.getInt("LAST_DOWN_SNR") - res.getInt("Max_DOWN_SNR"),
+                        res.getInt("Max_DOWN_SNR") - res.getInt("LAST_DOWN_SNR"),
                         res.getInt("Max_UP_SNR"),
-                        res.getInt("LAST_UP_SNR") - res.getInt("Max_UP_SNR"));
+                        res.getInt("Max_UP_SNR") - res.getInt("LAST_UP_SNR"));
                 formatter.format(" MIN  %8s(%3s) %10s(%3s) %n",
                         res.getInt("Min_DOWN_SNR"),
-                        res.getInt("LAST_DOWN_SNR") - res.getInt("Min_DOWN_SNR"),
+                        res.getInt("Min_DOWN_SNR") - res.getInt("LAST_DOWN_SNR"),
                         res.getInt("Min_UP_SNR"),
-                        res.getInt("LAST_UP_SNR") - res.getInt("Min_UP_SNR"));
+                        res.getInt("Min_UP_SNR") - res.getInt("LAST_UP_SNR"));
                 formatter.format(" AVG  %8s(%3s) %10s(%3s) %n",
                         res.getInt("Avg_DOWN_SNR"),
-                        res.getInt("LAST_DOWN_SNR") - res.getInt("Avg_DOWN_SNR"),
+                        res.getInt("Avg_DOWN_SNR") - res.getInt("LAST_DOWN_SNR"),
                         res.getInt("Avg_UP_SNR"),
-                        res.getInt("LAST_UP_SNR") - res.getInt("Avg_UP_SNR"));
+                        res.getInt("Avg_UP_SNR") - res.getInt("LAST_UP_SNR"));
                 formatter.format(" LAST %8s %15s %n",
                         res.getInt("LAST_DOWN_SNR"),
                         res.getInt("LAST_UP_SNR"));
@@ -160,19 +190,19 @@ public class MainForm {
                 formatter.format("%nATT   DOWNLOAD          UPLOAD %n");
                 formatter.format(" MAX  %8s(%5s) %8s(%5s) %n",
                         res.getInt("Max_DOWN"),
-                        res.getInt("LAST_DOWN") - res.getInt("Max_DOWN"),
+                        res.getInt("Max_DOWN") - res.getInt("LAST_DOWN"),
                         res.getInt("Max_UP"),
-                        res.getInt("LAST_UP") - res.getInt("Max_UP"));
+                        res.getInt("Max_UP") - res.getInt("LAST_UP"));
                 formatter.format(" MIN  %8s(%5s) %8s(%5s) %n",
                         res.getInt("Min_DOWN"),
-                        res.getInt("LAST_DOWN") - res.getInt("Min_DOWN"),
+                        res.getInt("Min_DOWN") - res.getInt("LAST_DOWN") ,
                         res.getInt("Min_UP"),
-                        res.getInt("LAST_UP") - res.getInt("Min_UP"));
+                        res.getInt("Min_UP") - res.getInt("LAST_UP"));
                 formatter.format(" AVG  %8s(%5s) %8s(%5s) %n",
                         res.getInt("Avg_DOWN"),
-                        res.getInt("LAST_DOWN") - res.getInt("Avg_DOWN"),
+                        res.getInt("Avg_DOWN") - res.getInt("LAST_DOWN"),
                         res.getInt("Avg_UP"),
-                        res.getInt("LAST_UP") - res.getInt("Avg_UP"));
+                        res.getInt("Avg_UP") - res.getInt("LAST_UP"));
                 formatter.format(" LAST %8s %15s %n",
                         res.getInt("LAST_DOWN"),
                         res.getInt("LAST_UP"));

@@ -33,8 +33,8 @@ public class Ip_Class {
 
 		Ip_Class ip_class = (Ip_Class) o;
 
-		return !(ip != null ? !ip.equals(ip_class.ip) : ip_class.ip != null)
-				&& (name != null ? name.equals(ip_class.name) : ip_class.name == null);
+		return !(ip != null ? !ip.equals(ip_class.ip) : ip_class.ip != null);
+				//&& (name != null ? name.equals(ip_class.name) : ip_class.name == null);
 	}
 
 	@Override
